@@ -240,7 +240,7 @@ export default function AddInventory() {
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 justify-end">
         <button
           onClick={handleAddListing}
           className="bg-blue-600 text-white px-4 py-2 rounded"
