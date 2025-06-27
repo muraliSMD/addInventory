@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { AiFillEdit, AiOutlineDelete, AiFillMessage  } from "react-icons/ai";
-import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
-import { FiCopy } from "react-icons/fi";
-import message from "../public/images/chat.png"
+import { AiFillEdit, AiOutlineDelete } from "react-icons/ai";
+import { FiCalendar, FiClock, FiMapPin, FiCopy } from "react-icons/fi";
 import Image from "next/image";
+import message from "../public/images/chat.png";
 
 export default function AddInventory() {
   const [listings, setListings] = useState([]);
@@ -32,20 +31,6 @@ export default function AddInventory() {
   const [filter, setFilter] = useState("");
   const [selectAll, setSelectAll] = useState(false);
 
-  const handleAddListing = () => {
-    if (editId !== null) {
-      setListings((prev) =>
-        prev.map((item) =>
-          item.id === editId ? { ...form, id: editId, checked: false } : item
-        )
-      );
-      setEditId(null);
-    } else {
-      setListings([...listings, { ...form, id: Date.now(), checked: false }]);
-    }
-    resetForm();
-  };
-
   const resetForm = () => {
     setForm({
       ticketType: "E-ticket",
@@ -67,6 +52,40 @@ export default function AddInventory() {
       uploadTicket: "",
     });
     setEditId(null);
+  };
+
+  const handleAddListing = () => {
+    if (editId !== null) {
+      setListings((prev) =>
+        prev.map((item) =>
+          item.id === editId ? { ...form, id: editId, checked: false } : item
+        )
+      );
+      setEditId(null);
+    } else {
+      setListings([...listings, { ...form, id: Date.now(), checked: false }]);
+    }
+    resetForm();
+  };
+
+  const handleEdit = (id) => {
+    const item = listings.find((i) => i.id === id);
+    if (item) {
+      const { checked, ...rest } = item; // 🛠 Remove `checked` field
+      setForm(rest);
+      setEditId(id);
+    }
+  };
+
+  const handleDelete = (id) => {
+    setListings((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  const handleClone = (id) => {
+    const item = listings.find((i) => i.id === id);
+    if (item) {
+      setListings([...listings, { ...item, id: Date.now(), checked: false }]);
+    }
   };
 
   const handleChange = (e) => {
@@ -100,25 +119,6 @@ export default function AddInventory() {
     setListings((prev) => prev.filter((item) => !item.checked));
   };
 
-  const handleEdit = (id) => {
-    const item = listings.find((i) => i.id === id);
-    if (item) {
-      setForm({ ...item });
-      setEditId(id);
-    }
-  };
-
-  const handleClone = (id) => {
-    const item = listings.find((i) => i.id === id);
-    if (item) {
-      setListings([...listings, { ...item, id: Date.now(), checked: false }]);
-    }
-  };
-
-  const handleDelete = (id) => {
-    setListings((prev) => prev.filter((i) => i.id !== id));
-  };
-
   const filteredListings = listings.filter((item) =>
     item.ticketType.toLowerCase().includes(filter.toLowerCase())
   );
@@ -140,58 +140,46 @@ export default function AddInventory() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-      <div>
         <h2 className="text-2xl font-semibold">Add Inventory</h2>
-      </div>
-        <div>
-        <button
-          className="bg-blue-600 text-white px-4 py-2 m-2 rounded"
-        >
-          Request Event
-        </button>
-        <div>
-<Image src ={message} width={50} height={50} alt="message" />
+        <div className="flex items-center gap-4">
+          <button className="bg-blue-600 text-white px-4 py-2 rounded">
+            Request Event
+          </button>
+          <Image src={message} width={40} height={40} alt="message" />
         </div>
-        
-        </div>
-        
       </div>
 
+      {/* Event Info Section */}
       <div className="flex gap-4 p-2 rounded">
-        {/* Left Section - 75% */}
-        <div className="flex flex-row w-3/4 items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-1">
-            <input
-              className="border rounded w-100 px-2 py-1"
-              type="text"
-              placeholder="Chelsea Vs arsenal - premier league"
-            />
-          </div>
-
+        <div className="flex flex-wrap gap-4 w-3/4 items-center">
+          <input
+            className="border rounded px-2 py-1"
+            type="text"
+            placeholder="Chelsea vs Arsenal - Premier League"
+          />
           <div className="flex items-center gap-1">
             <FiCalendar className="text-blue-600" />
-            <h2 className="text-xl font-semibold">Sun, 10 Nov 2025</h2>
+            <span className="text-lg font-medium">Sun, 10 Nov 2025</span>
           </div>
           <div className="flex items-center gap-1">
             <FiClock className="text-blue-600" />
-            <h2 className="text-xl font-semibold">16:30</h2>
+            <span className="text-lg font-medium">16:30</span>
           </div>
           <div className="flex items-center gap-1">
             <FiMapPin className="text-blue-600" />
-            <h2 className="text-xl font-semibold">
+            <span className="text-lg font-medium">
               Stamford Bridge, London, United Kingdom
-            </h2>
+            </span>
           </div>
         </div>
-
-        {/* Right Section - 25% */}
-        <div className="flex justify-end items-center w-1/4">
-          <h2 className="text-xl font-semibold text-blue-700 cursor-pointer">
+        <div className="flex justify-end w-1/4 items-center">
+          <h2 className="text-blue-700 font-semibold text-lg cursor-pointer">
             View Map
           </h2>
         </div>
       </div>
 
+      {/* Form Section */}
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
         {Object.entries(form).map(([key, value]) => (
           <div key={key} className="flex flex-col">
@@ -223,16 +211,17 @@ export default function AddInventory() {
               <div className="flex items-center gap-2 mt-2">
                 <input
                   type="checkbox"
-                  name="ticketInHand"
-                  checked={form.ticketInHand}
+                  name={key}
+                  checked={form[key]}
                   onChange={handleChange}
+                  className="w-5 h-5"
                 />
-                <label className="text-sm">Ticket In Hand</label>
+                <label className="text-sm font-medium">Ticket In Hand</label>
               </div>
             ) : key === "uploadTicket" ? (
               <input
                 type="file"
-                name="uploadTicket"
+                name={key}
                 onChange={handleChange}
                 disabled
                 className="border px-3 py-2 rounded"
@@ -250,6 +239,7 @@ export default function AddInventory() {
         ))}
       </div>
 
+      {/* Buttons */}
       <div className="flex gap-2 mb-6">
         <button
           onClick={handleAddListing}
@@ -262,6 +252,7 @@ export default function AddInventory() {
         </button>
       </div>
 
+      {/* Listing Table */}
       <div className="overflow-x-auto border rounded-md max-h-[400px]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-blue-900 text-white sticky top-0">
@@ -273,18 +264,24 @@ export default function AddInventory() {
                   onChange={handleSelectAll}
                 />
               </th>
-              <th className="px-4 py-2 text-left">Ticket Type</th>
-              <th className="px-4 py-2 text-left">Qty</th>
-              <th className="px-4 py-2 text-left">Split</th>
-              <th className="px-4 py-2 text-left">Max</th>
-              <th className="px-4 py-2 text-left">Category</th>
-              <th className="px-4 py-2 text-left">Section</th>
-              <th className="px-4 py-2 text-left">Seating</th>
-              <th className="px-4 py-2 text-left">Row</th>
-              <th className="px-4 py-2 text-left">Seat</th>
-              <th className="px-4 py-2 text-left">Face</th>
-              <th className="px-4 py-2 text-left">Payout</th>
-              <th className="px-4 py-2 text-left">Actions</th>
+              {[
+                "Ticket Type",
+                "Qty",
+                "Split",
+                "Max",
+                "Category",
+                "Section",
+                "Seating",
+                "Row",
+                "Seat",
+                "Face",
+                "Payout",
+                "Actions",
+              ].map((header) => (
+                <th key={header} className="px-4 py-2 text-left">
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
