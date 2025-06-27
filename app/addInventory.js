@@ -44,7 +44,9 @@ export default function addInventory() {
                     <option value="">None</option>
                  </select>
             </div>
-            
+            <button className='mt-4 bg-blue-600 text-white px-2 py-2 rounded hover:bg-blue-700'>
+                + Add Listing
+            </button>
         </div>
     </div>
   )
