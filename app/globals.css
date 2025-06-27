@@ -5,6 +5,21 @@
   --foreground: #171717;
 }
 
+p, h3, h4, label {
+  font-family: monospace;
+  font-weight: 500;
+  color: #4a4747;
+}
+
+h2 {
+   font-family: monospace;
+}
+
+input, select {
+  border: 1px solid #4a4747;
+
+}
+
 /* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

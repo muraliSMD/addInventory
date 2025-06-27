@@ -1,38 +1,42 @@
 "use client";
 
 import { useState } from "react";
-// import { FaCalendarAlt } from "react-icons/fa";
-// import { BsFillPlusCircleFill } from "react-icons/bs";
-// import { AiFillEdit, AiOutlineDelete } from "react-icons/ai";
-// import { FiCopy } from "react-icons/fi";
-// import { MdOutlinePublish } from "react-icons/md";
+import { AiFillEdit, AiOutlineDelete, AiFillMessage  } from "react-icons/ai";
+import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
+import { FiCopy } from "react-icons/fi";
 
 export default function AddInventory() {
   const [listings, setListings] = useState([]);
   const [form, setForm] = useState({
-    event: "Chelsea vs Arsenal - Premier League",
-    ticketType: "ticketType",
+    ticketType: "E-ticket",
     quantity: 5,
     splitType: "None",
-    seatingArrangement: "Not Seated Together",
-    maxDisplay: 30,
-    fanArea: "Home",
-    category: "Away Fans Section",
+    maxDisplay: 5,
+    FanArea: "Home",
+    category: "Away Fan Section",
     section: "Longside Lower Tier",
+    seatingArrangement: "Seated Together",
     row: 5,
     firstSeat: 3,
     faceValue: 90000,
     payoutPrice: 90000,
     benefits: "None",
     restrictions: "None",
-    shipDate: "2014-11-29",
+    shipDate: "",
+    ticketInHand: false,
+    uploadTicket: "",
   });
   const [editId, setEditId] = useState(null);
+  const [filter, setFilter] = useState("");
   const [selectAll, setSelectAll] = useState(false);
 
   const handleAddListing = () => {
     if (editId !== null) {
-      setListings(prev => prev.map(item => item.id === editId ? { ...form, id: editId, checked: item.checked } : item));
+      setListings((prev) =>
+        prev.map((item) =>
+          item.id === editId ? { ...form, id: editId, checked: false } : item
+        )
+      );
       setEditId(null);
     } else {
       setListings([...listings, { ...form, id: Date.now(), checked: false }]);
@@ -40,35 +44,62 @@ export default function AddInventory() {
     resetForm();
   };
 
-const handleChange = (e) => {
-  const { name, value, type } = e.target;
+  const resetForm = () => {
+    setForm({
+      ticketType: "E-ticket",
+      quantity: 5,
+      splitType: "None",
+      maxDisplay: 5,
+      FanArea: "Home",
+      category: "Away Fan Section",
+      section: "Longside Lower Tier",
+      seatingArrangement: "Seated Together",
+      row: 5,
+      firstSeat: 3,
+      faceValue: 90000,
+      payoutPrice: 90000,
+      benefits: "None",
+      restrictions: "None",
+      shipDate: "",
+      ticketInHand: false,
+      uploadTicket: "",
+    });
+    setEditId(null);
+  };
 
-  const formattedValue =
-    type === "number" ? parseInt(value, 10) || 0 : value;
-
-  setForm((prevForm) => ({
-    ...prevForm,
-    [name]: formattedValue,
-  }));
-};
-
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    if (type === "checkbox") {
+      setForm((prev) => ({ ...prev, [name]: checked }));
+    } else if (type === "file") {
+      setForm((prev) => ({ ...prev, [name]: files[0]?.name || "" }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
 
   const toggleCheckbox = (id) => {
-    setListings(prev => prev.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+    setListings((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
+    );
   };
 
   const handleSelectAll = () => {
     const newSelect = !selectAll;
     setSelectAll(newSelect);
-    setListings(prev => prev.map(item => ({ ...item, checked: newSelect })));
+    setListings((prev) =>
+      prev.map((item) => ({ ...item, checked: newSelect }))
+    );
   };
 
   const handleDeleteSelected = () => {
-    setListings(prev => prev.filter(item => !item.checked));
+    setListings((prev) => prev.filter((item) => !item.checked));
   };
 
   const handleEdit = (id) => {
-    const item = listings.find(l => l.id === id);
+    const item = listings.find((i) => i.id === id);
     if (item) {
       setForm({ ...item });
       setEditId(id);
@@ -76,153 +107,227 @@ const handleChange = (e) => {
   };
 
   const handleClone = (id) => {
-    const item = listings.find(l => l.id === id);
+    const item = listings.find((i) => i.id === id);
     if (item) {
-      const cloned = { ...item, id: Date.now(), checked: false };
-      setListings([...listings, cloned]);
+      setListings([...listings, { ...item, id: Date.now(), checked: false }]);
     }
   };
 
   const handleDelete = (id) => {
-    setListings(prev => prev.filter(item => item.id !== id));
+    setListings((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const resetForm = () => {
-    setForm({
-      event: "Chelsea vs Arsenal - Premier League",
-      ticketType: "Local Delivery",
-      quantity: 5,
-      splitType: "None",
-      seatingArrangement: "Not Seated Together",
-      maxDisplay: 30,
-      fanArea: "Home",
-      category: "Away Fans Section",
-      section: "Longside Lower Tier",
-      row: 5,
-      firstSeat: 3,
-      faceValue: 90000,
-      payoutPrice: 90000,
-      benefits: "None",
-      restrictions: "None",
-      shipDate: "2014-11-29",
-    });
+  const filteredListings = listings.filter((item) =>
+    item.ticketType.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  const selectOptions = (name) => {
+    const options = {
+      ticketType: ["E-ticket", "Local Delivery"],
+      splitType: ["None", "Split Type"],
+      category: ["Home", "Away Fan Section"],
+      section: ["Longside Lower Tier", "Washington Lower Tier"],
+      FanArea: ["Home", "Away"],
+      seatingArrangement: ["Not Seated together", "Seated Together"],
+      benefits: ["None", "Merchandise", "Free Food"],
+      restrictions: ["None", "ID Required", "No Kids"],
+    };
+    return options[name] || [];
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4">Add Inventory</h1>
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-medium">Choose Match Event *</label>
-            <input name="event" value={form.event} onChange={handleChange} className="border p-2 rounded w-full" />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-medium">Date to Ship *</label>
-            <input name="shipDate" type="date" value={form.shipDate} onChange={handleChange} className="border p-2 rounded w-full" />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-medium">Time *</label>
-            <input type="time" className="border p-2 rounded w-full" defaultValue="16:30" />
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold">Add Inventory</h2>
+        <button
+          onClick={handleDeleteSelected}
+          className="border px-2 py-2 rounded text-red-600"
+        >
+          Delete Selected
+        </button>
+
+      </div>
+
+      <div className="flex gap-4 p-2 rounded">
+        {/* Left Section - 75% */}
+        <div className="flex flex-row w-3/4 items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-1">
+            <input
+              className="border rounded w-100 px-2 py-1"
+              type="text"
+              placeholder="Chelsea Vs arsenal - premier league"
+            />
           </div>
 
-          {[...formFields()].map(([label, name, type, options], idx) => (
-            <div key={idx} className="flex flex-col">
-              <label className="text-sm font-medium">{label} *</label>
-              {type === "select" ? (
-                <select name={name} onChange={handleChange} value={form[name]} className="border p-2 rounded">
-                  {options.map(opt => <option key={opt}>{opt}</option>)}
-                </select>
-              ) : (
-                <input name={name} type={type} value={form[name]} onChange={handleChange} className="border p-2 rounded" />
-              )}
-            </div>
-          ))}
+          <div className="flex items-center gap-1">
+            <FiCalendar className="text-blue-600" />
+            <h2 className="text-xl font-semibold">Sun, 10 Nov 2025</h2>
+          </div>
+          <div className="flex items-center gap-1">
+            <FiClock className="text-blue-600" />
+            <h2 className="text-xl font-semibold">16:30</h2>
+          </div>
+          <div className="flex items-center gap-1">
+            <FiMapPin className="text-blue-600" />
+            <h2 className="text-xl font-semibold">
+              Stamford Bridge, London, United Kingdom
+            </h2>
+          </div>
         </div>
 
-        <div className="mt-4 flex justify-start gap-4">
-          <button onClick={handleAddListing} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            {editId ? "Update Listing" : "+ Add Listing"}
-          </button>
-          <button onClick={resetForm} className="text-gray-600">Clear</button>
+        {/* Right Section - 25% */}
+        <div className="flex justify-end items-center w-1/4">
+          <h2 className="text-xl font-semibold text-blue-700 cursor-pointer">
+            View Map
+          </h2>
         </div>
       </div>
 
-      <div className="bg-white mt-6 p-4 rounded-lg shadow-md">
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold mb-2">Listings</h2>
-          <div className="space-x-2">
-            <button onClick={handleSelectAll} className="text-sm border px-2 py-1 rounded">
-              {selectAll ? "Deselect All" : "Select All"}
-            </button>
-            <button onClick={handleDeleteSelected} className="text-sm border px-2 py-1 rounded text-red-500">
-              Delete Selected
-            </button>
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
+        {Object.entries(form).map(([key, value]) => (
+          <div key={key} className="flex flex-col">
+            <label className="text-sm font-medium capitalize mb-1">
+              {key.replace(/([A-Z])/g, " $1")} *
+            </label>
+            {selectOptions(key).length > 0 ? (
+              <select
+                name={key}
+                value={form[key]}
+                onChange={handleChange}
+                className="border px-3 py-2 rounded"
+              >
+                {selectOptions(key).map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            ) : key === "shipDate" ? (
+              <input
+                type="date"
+                name={key}
+                value={form[key]}
+                onChange={handleChange}
+                className="border px-3 py-2 rounded"
+              />
+            ) : key === "ticketInHand" ? (
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  name="ticketInHand"
+                  checked={form.ticketInHand}
+                  onChange={handleChange}
+                />
+                <label className="text-sm">Ticket In Hand</label>
+              </div>
+            ) : key === "uploadTicket" ? (
+              <input
+                type="file"
+                name="uploadTicket"
+                onChange={handleChange}
+                disabled
+                className="border px-3 py-2 rounded"
+              />
+            ) : (
+              <input
+                type={typeof value === "number" ? "number" : "text"}
+                name={key}
+                value={form[key]}
+                onChange={handleChange}
+                className="border px-3 py-2 rounded"
+              />
+            )}
           </div>
-        </div>
-        <table className="w-full text-left">
-          <thead>
-            <tr className="bg-blue-900 text-white">
-              <th className="p-2"><input type="checkbox" checked={selectAll} onChange={handleSelectAll} /></th>
-              <th className="p-2">Ticket Type</th>
-              <th className="p-2">Qty</th>
-              <th className="p-2">Split</th>
-              <th className="p-2">Max</th>
-              <th className="p-2">Category</th>
-              <th className="p-2">Section</th>
-              <th className="p-2">Row</th>
-              <th className="p-2">Seat</th>
-              <th className="p-2">Face</th>
-              <th className="p-2">Payout</th>
-              <th className="p-2">Actions</th>
+        ))}
+      </div>
+
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={handleAddListing}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          {editId ? "Update Listing" : "+ Add Listing"}
+        </button>
+        <button onClick={resetForm} className="border px-4 py-2 rounded">
+          Reset
+        </button>
+      </div>
+
+      <div className="overflow-x-auto border rounded-md max-h-[400px]">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-blue-900 text-white sticky top-0">
+            <tr>
+              <th className="px-4 py-2">
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
+              </th>
+              <th className="px-4 py-2 text-left">Ticket Type</th>
+              <th className="px-4 py-2 text-left">Qty</th>
+              <th className="px-4 py-2 text-left">Split</th>
+              <th className="px-4 py-2 text-left">Max</th>
+              <th className="px-4 py-2 text-left">Category</th>
+              <th className="px-4 py-2 text-left">Section</th>
+              <th className="px-4 py-2 text-left">Seating</th>
+              <th className="px-4 py-2 text-left">Row</th>
+              <th className="px-4 py-2 text-left">Seat</th>
+              <th className="px-4 py-2 text-left">Face</th>
+              <th className="px-4 py-2 text-left">Payout</th>
+              <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {listings.map((item) => (
-              <tr key={item.id} className="border-t">
-                <td className="p-2"><input type="checkbox" checked={item.checked} onChange={() => toggleCheckbox(item.id)} /></td>
-                <td className="p-2">{item.ticketType}</td>
-                <td className="p-2">{item.quantity}</td>
-                <td className="p-2">{item.splitType}</td>
-                <td className="p-2">{item.maxDisplay}</td>
-                <td className="p-2">{item.category}</td>
-                <td className="p-2">{item.section}</td>
-                <td className="p-2">{item.row}</td>
-                <td className="p-2">{item.firstSeat}</td>
-                <td className="p-2">{item.faceValue}</td>
-                <td className="p-2">{item.payoutPrice}</td>
-                <td className="p-2 flex gap-2">
-                  <button onClick={() => handleEdit(item.id)}className="text-blue-600" size={18} >Edit</button>
-                  <button onClick={() => handleClone(item.id)}className="text-gray-600" size={18} >Clone</button>
-                  <button onClick={() => handleDelete(item.id)}className="text-red-600" size={18} >Delete</button>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredListings.map((item) => (
+              <tr key={item.id}>
+                <td className="px-4 py-2">
+                  <input
+                    type="checkbox"
+                    checked={item.checked}
+                    onChange={() => toggleCheckbox(item.id)}
+                  />
+                </td>
+                <td className="px-4 py-2">{item.ticketType}</td>
+                <td className="px-4 py-2">{item.quantity}</td>
+                <td className="px-4 py-2">{item.splitType}</td>
+                <td className="px-4 py-2">{item.maxDisplay}</td>
+                <td className="px-4 py-2">{item.category}</td>
+                <td className="px-4 py-2">{item.section}</td>
+                <td className="px-4 py-2">{item.seatingArrangement}</td>
+                <td className="px-4 py-2">{item.row}</td>
+                <td className="px-4 py-2">{item.firstSeat}</td>
+                <td className="px-4 py-2">₹{item.faceValue}</td>
+                <td className="px-4 py-2">₹{item.payoutPrice}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button onClick={() => handleEdit(item.id)}>
+                    <AiFillEdit className="text-blue-600" size={18} />
+                  </button>
+                  <button onClick={() => handleClone(item.id)}>
+                    <FiCopy className="text-gray-600" size={18} />
+                  </button>
+                  <button onClick={() => handleDelete(item.id)}>
+                    <AiOutlineDelete className="text-red-600" size={18} />
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        <div className="mt-4 flex justify-end gap-4">
-          <button className="px-4 py-2 border border-gray-400 rounded hover:bg-gray-100">Cancel</button>
-          <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Publish Live</button>
-        </div>
       </div>
+
+      <footer className="mt-6 flex justify-end gap-2 border-t pt-4">
+        <button
+          onClick={handleDeleteSelected}
+          className="border px-4 py-2 rounded text-red-600"
+        >
+          Delete Selected
+        </button>
+        <button className="border px-4 py-2 rounded">Cancel</button>
+        <button className="bg-green-600 text-white px-4 py-2 rounded">
+          Publish
+        </button>
+      </footer>
     </div>
   );
 }
-
-const formFields = () => [
-  ["Ticket Type", "ticketType", "select", ["Local Delivery", "E-ticket"]],
-  ["Quantity", "quantity", "number"],
-  ["Split Type", "splitType", "select", ["None", "Split Type A"]],
-  ["Seating Arrangement", "seatingArrangement", "select", ["Not Seated Together", "Seated Together"]],
-  ["Max Display Quantity", "maxDisplay", "number"],
-  ["Fan Area", "fanArea", "select", ["Home", "Away"]],
-  ["Category", "category", "select", ["Away Fans Section"]],
-  ["Section/Block", "section", "text"],
-  ["Row", "row", "number"],
-  ["First Seat", "firstSeat", "number"],
-  ["Face Value", "faceValue", "number"],
-  ["Payout Price", "payoutPrice", "number"],
-  ["Benefits", "benefits", "select", ["None"]],
-  ["Restrictions", "restrictions", "select", ["None"]]
-];
