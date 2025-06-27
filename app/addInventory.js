@@ -19,8 +19,32 @@ export default function addInventory() {
                     <option>None</option>
                       <option>Split Type A</option>
                   </select>
-                  
+                  <select className='border p-2 ropunded'>
+                    <option>Not Seated Together</option>
+                     <option>Seated Together</option>
+                  </select>
+                 <input type="number" className="border p-2 rounded" />
+                 <select className='border p-2 rounded'>
+                    <option>Home</option>
+                     <option>Away</option>
+                 </select>
+                 <select className='border p-2 rounded'>
+                    <option>Away Fans Section</option>
+                 </select>
+                 <input type="text" className='border p-2 rounded' placeholder='Section/Block' />
+                 <input type="number" className='border p-2 rounded'/>
+                 <input type="number" className='border p-2 rounded'/>
+                 <input type="number" className='border p-2 rounded'/>
+                 <input type="number" className='border p-2 rounded'/>
+
+                 <select className='border p-2 rounded'>
+                    <option value="">None</option>
+                 </select>
+                  <select className='border p-2 rounded'>
+                    <option value="">None</option>
+                 </select>
             </div>
+            
         </div>
     </div>
   )
