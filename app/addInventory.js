@@ -4,6 +4,8 @@ import { useState } from "react";
 import { AiFillEdit, AiOutlineDelete, AiFillMessage  } from "react-icons/ai";
 import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
 import { FiCopy } from "react-icons/fi";
+import message from "../public/images/chat.png"
+import Image from "next/image";
 
 export default function AddInventory() {
   const [listings, setListings] = useState([]);
@@ -138,14 +140,21 @@ export default function AddInventory() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
+      <div>
         <h2 className="text-2xl font-semibold">Add Inventory</h2>
+      </div>
+        <div>
         <button
-          onClick={handleDeleteSelected}
-          className="border px-2 py-2 rounded text-red-600"
+          className="bg-blue-600 text-white px-4 py-2 m-2 rounded"
         >
-          Delete Selected
+          Request Event
         </button>
-
+        <div>
+<Image src ={message} width={50} height={50} alt="message" />
+        </div>
+        
+        </div>
+        
       </div>
 
       <div className="flex gap-4 p-2 rounded">
