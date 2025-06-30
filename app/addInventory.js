@@ -17,20 +17,20 @@ import {
 export default function AddInventory() {
   const [listings, setListings] = useState([]);
   const [form, setForm] = useState({
-    ticketType: "E-ticket",
-    quantity: 5,
-    splitType: "None",
-    maxDisplay: 5,
-    FanArea: "Home",
-    category: "Away Fan Section",
-    section: "Longside Lower Tier",
-    seatingArrangement: "Seated Together",
-    row: 5,
-    firstSeat: 3,
-    faceValue: 90000,
-    payoutPrice: 90000,
-    benefits: "None",
-    restrictions: "None",
+    ticketType: "",
+    quantity: "",
+    splitType: "",
+    maxDisplay: "",
+    FanArea: "",
+    category: "",
+    section: "",
+    seatingArrangement: "",
+    row: "",
+    firstSeat: "",
+    faceValue: "",
+    payoutPrice: "",
+    benefits: "",
+    restrictions: "",
     shipDate: "",
     ticketInHand: false,
     uploadTicket: "",
@@ -39,22 +39,27 @@ export default function AddInventory() {
   const [filter, setFilter] = useState("");
   const [selectAll, setSelectAll] = useState(false);
 
+  const getLabel = (key, label) => {
+    const isEmpty = form[key] === "" || form[key] === null;
+    return `${label}${isEmpty ? " *" : ""}`;
+  };
+
   const resetForm = () => {
     setForm({
-      ticketType: "E-ticket",
-      quantity: 5,
-      splitType: "None",
-      maxDisplay: 5,
-      FanArea: "Home",
-      category: "Away Fan Section",
-      section: "Longside Lower Tier",
-      seatingArrangement: "Seated Together",
-      row: 5,
-      firstSeat: 3,
-      faceValue: 90000,
-      payoutPrice: 90000,
-      benefits: "None",
-      restrictions: "None",
+      ticketType: "",
+      quantity: "",
+      splitType: "",
+      maxDisplay: "",
+      FanArea: "",
+      category: "",
+      section: "",
+      seatingArrangement: "",
+      row: "",
+      firstSeat: "",
+      faceValue: "",
+      payoutPrice: "",
+      benefits: "",
+      restrictions: "",
       shipDate: "",
       ticketInHand: false,
       uploadTicket: "",
@@ -79,7 +84,7 @@ export default function AddInventory() {
   const handleEdit = (id) => {
     const item = listings.find((i) => i.id === id);
     if (item) {
-      const { checked, ...rest } = item; // 🛠 Remove `checked` field
+      const { checked, ...rest } = item;
       setForm(rest);
       setEditId(id);
     }
@@ -147,7 +152,7 @@ export default function AddInventory() {
 
   return (
     <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Add Inventory</h2>
         <div className="flex items-center gap-4">
           <button className="bg-blue-600 text-white px-4 py-2 rounded">
@@ -157,17 +162,18 @@ export default function AddInventory() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
         {Object.entries(form).map(([key, value]) => {
+          const label = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
           if (selectOptions(key).length > 0) {
             return (
               <FormControl fullWidth key={key}>
-                <InputLabel>{getLabel(key, key.replace(/([A-Z])/g, " $1"))}</InputLabel>
+                <InputLabel>{getLabel(key, label)}</InputLabel>
                 <Select
                   name={key}
                   value={value}
                   onChange={handleChange}
-                  label={key.replace(/([A-Z])/g, " $1")}
+                  label={label}
                 >
                   {selectOptions(key).map((opt) => (
                     <MenuItem key={opt} value={opt}>
@@ -220,7 +226,7 @@ export default function AddInventory() {
                 key={key}
                 fullWidth
                 name={key}
-                label={getLabel(key, key.replace(/([A-Z])/g, " $1"))}
+                label={getLabel(key, label)}
                 value={value}
                 onChange={handleChange}
                 type={typeof value === "number" ? "number" : "text"}
@@ -243,7 +249,6 @@ export default function AddInventory() {
         </Button>
       </div>
 
-      {/* Listing Table */}
       <div className="overflow-x-auto border rounded-md max-h-[400px]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-blue-900 text-white sticky top-0">
@@ -255,20 +260,7 @@ export default function AddInventory() {
                   onChange={handleSelectAll}
                 />
               </th>
-              {[
-                "Ticket Type",
-                "Qty",
-                "Split",
-                "Max",
-                "Category",
-                "Section",
-                "Seating",
-                "Row",
-                "Seat",
-                "Face",
-                "Payout",
-                "Actions",
-              ].map((header) => (
+              {["Ticket Type", "Qty", "Split", "Max", "Category", "Section", "Seating", "Row", "Seat", "Face", "Payout", "Actions"].map((header) => (
                 <th key={header} className="px-4 py-2 text-left">
                   {header}
                 </th>
