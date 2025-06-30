@@ -5,6 +5,14 @@ import { AiFillEdit, AiOutlineDelete } from "react-icons/ai";
 import { FiCalendar, FiClock, FiMapPin, FiCopy } from "react-icons/fi";
 import Image from "next/image";
 import message from "../public/images/chat.png";
+import {
+  TextField,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Button,
+} from "@mui/material";
 
 export default function AddInventory() {
   const [listings, setListings] = useState([]);
@@ -139,7 +147,7 @@ export default function AddInventory() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Add Inventory</h2>
         <div className="flex items-center gap-4">
           <button className="bg-blue-600 text-white px-4 py-2 rounded">
@@ -149,107 +157,90 @@ export default function AddInventory() {
         </div>
       </div>
 
-      {/* Event Info Section */}
-      <div className="flex gap-4 p-2 rounded">
-        <div className="flex flex-wrap gap-4 w-3/4 items-center">
-          <input
-            className="border rounded px-2 py-1"
-            type="text"
-            placeholder="Chelsea vs Arsenal - Premier League"
-          />
-          <div className="flex items-center gap-1">
-            <FiCalendar className="text-blue-600" />
-            <span className="text-lg font-medium">Sun, 10 Nov 2025</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <FiClock className="text-blue-600" />
-            <span className="text-lg font-medium">16:30</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <FiMapPin className="text-blue-600" />
-            <span className="text-lg font-medium">
-              Stamford Bridge, London, United Kingdom
-            </span>
-          </div>
-        </div>
-        <div className="flex justify-end w-1/4 items-center">
-          <h2 className="text-blue-700 font-semibold text-lg cursor-pointer">
-            View Map
-          </h2>
-        </div>
-      </div>
-
-      {/* Form Section */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
-        {Object.entries(form).map(([key, value]) => (
-          <div key={key} className="flex flex-col">
-            <label className="text-sm font-medium capitalize mb-1">
-              {key.replace(/([A-Z])/g, " $1")} *
-            </label>
-            {selectOptions(key).length > 0 ? (
-              <select
-                name={key}
-                value={form[key]}
-                onChange={handleChange}
-                className="border px-3 py-2 rounded"
-              >
-                {selectOptions(key).map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            ) : key === "shipDate" ? (
-              <input
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        {Object.entries(form).map(([key, value]) => {
+          if (selectOptions(key).length > 0) {
+            return (
+              <FormControl fullWidth key={key}>
+                <InputLabel>{getLabel(key, key.replace(/([A-Z])/g, " $1"))}</InputLabel>
+                <Select
+                  name={key}
+                  value={value}
+                  onChange={handleChange}
+                  label={key.replace(/([A-Z])/g, " $1")}
+                >
+                  {selectOptions(key).map((opt) => (
+                    <MenuItem key={opt} value={opt}>
+                      {opt}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          } else if (key === "shipDate") {
+            return (
+              <TextField
+                key={key}
+                fullWidth
                 type="date"
                 name={key}
-                value={form[key]}
+                label={getLabel(key, "Ship Date")}
+                value={value}
                 onChange={handleChange}
-                className="border px-3 py-2 rounded"
+                InputLabelProps={{ shrink: true }}
               />
-            ) : key === "ticketInHand" ? (
-              <div className="flex items-center gap-2 mt-2">
+            );
+          } else if (key === "ticketInHand") {
+            return (
+              <div key={key} className="flex items-center">
+                <label className="text-sm mr-2">Ticket In Hand</label>
                 <input
                   type="checkbox"
                   name={key}
-                  checked={form[key]}
+                  checked={value}
                   onChange={handleChange}
-                  className="w-5 h-5"
                 />
-                <label className="text-sm font-medium">Ticket In Hand</label>
               </div>
-            ) : key === "uploadTicket" ? (
-              <input
+            );
+          } else if (key === "uploadTicket") {
+            return (
+              <TextField
+                key={key}
+                fullWidth
                 type="file"
                 name={key}
+                label={getLabel(key, "Upload Ticket")}
                 onChange={handleChange}
                 disabled
-                className="border px-3 py-2 rounded"
               />
-            ) : (
-              <input
-                type={typeof value === "number" ? "number" : "text"}
+            );
+          } else {
+            return (
+              <TextField
+                key={key}
+                fullWidth
                 name={key}
-                value={form[key]}
+                label={getLabel(key, key.replace(/([A-Z])/g, " $1"))}
+                value={value}
                 onChange={handleChange}
-                className="border px-3 py-2 rounded"
+                type={typeof value === "number" ? "number" : "text"}
               />
-            )}
-          </div>
-        ))}
+            );
+          }
+        })}
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-2 mb-6 justify-end">
-        <button
+        <Button
           onClick={handleAddListing}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          variant="contained"
+          color="primary"
         >
           {editId ? "Update Listing" : "+ Add Listing"}
-        </button>
-        <button onClick={resetForm} className="border px-4 py-2 rounded">
+        </Button>
+        <Button onClick={resetForm} variant="outlined">
           Reset
-        </button>
+        </Button>
       </div>
 
       {/* Listing Table */}
