@@ -15,59 +15,69 @@ import {
 } from "@mui/material";
 
 export default function AddInventory() {
-  const [listings, setListings] = useState([]);
-  const [form, setForm] = useState({
-    ticketType: "",
+  const initialForm = {
+    ticketType: "E-ticket",
     quantity: "",
-    splitType: "",
+    splitType: "None",
     maxDisplay: "",
-    FanArea: "",
-    category: "",
-    section: "",
-    seatingArrangement: "",
+    FanArea: "Home",
+    category: "Away Fan Section",
+    section: "Longside Lower Tier",
+    seatingArrangement: "Seated Together",
     row: "",
     firstSeat: "",
     faceValue: "",
     payoutPrice: "",
-    benefits: "",
-    restrictions: "",
+    benefits: "None",
+    restrictions: "None",
     shipDate: "",
     ticketInHand: false,
     uploadTicket: "",
-  });
+  };
+
+  const [form, setForm] = useState(initialForm);
+  const [formErrors, setFormErrors] = useState({});
+  const [listings, setListings] = useState([]);
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("");
   const [selectAll, setSelectAll] = useState(false);
 
-  const getLabel = (key, label) => {
-    const isEmpty = form[key] === "" || form[key] === null;
-    return `${label}${isEmpty ? " *" : ""}`;
+  const selectOptions = {
+    ticketType: ["E-ticket", "Local Delivery"],
+    splitType: ["None", "Split Type"],
+    category: ["Home", "Away Fan Section"],
+    section: ["Longside Lower Tier", "Washington Lower Tier"],
+    FanArea: ["Home", "Away"],
+    seatingArrangement: ["Not Seated together", "Seated Together"],
+    benefits: ["None", "Merchandise", "Free Food"],
+    restrictions: ["None", "ID Required", "No Kids"],
   };
 
-  const resetForm = () => {
-    setForm({
-      ticketType: "",
-      quantity: "",
-      splitType: "",
-      maxDisplay: "",
-      FanArea: "",
-      category: "",
-      section: "",
-      seatingArrangement: "",
-      row: "",
-      firstSeat: "",
-      faceValue: "",
-      payoutPrice: "",
-      benefits: "",
-      restrictions: "",
-      shipDate: "",
-      ticketInHand: false,
-      uploadTicket: "",
+  const validateForm = () => {
+    const errors = {};
+    Object.entries(form).forEach(([key, value]) => {
+      if (
+        typeof value === "string" &&
+        value.trim() === "" &&
+        key !== "uploadTicket"
+      ) {
+        errors[key] = "This field is required";
+      }
+      if (
+        typeof value === "number" &&
+        (value === 0 || value === "") &&
+        key !== "uploadTicket"
+      ) {
+        errors[key] = "This field is required";
+      }
     });
-    setEditId(null);
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleAddListing = () => {
+    if (!validateForm()) return;
+
     if (editId !== null) {
       setListings((prev) =>
         prev.map((item) =>
@@ -78,15 +88,34 @@ export default function AddInventory() {
     } else {
       setListings([...listings, { ...form, id: Date.now(), checked: false }]);
     }
+
     resetForm();
+  };
+
+  const resetForm = () => {
+    setForm(initialForm);
+    setFormErrors({});
+    setEditId(null);
   };
 
   const handleEdit = (id) => {
     const item = listings.find((i) => i.id === id);
     if (item) {
-      const { checked, ...rest } = item;
+      const { checked, id: _, ...rest } = item;
       setForm(rest);
       setEditId(id);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+    if (type === "checkbox") {
+      setForm((prev) => ({ ...prev, [name]: checked }));
+    } else if (type === "file") {
+      setForm((prev) => ({ ...prev, [name]: files[0]?.name || "" }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -98,17 +127,6 @@ export default function AddInventory() {
     const item = listings.find((i) => i.id === id);
     if (item) {
       setListings([...listings, { ...item, id: Date.now(), checked: false }]);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-    if (type === "checkbox") {
-      setForm((prev) => ({ ...prev, [name]: checked }));
-    } else if (type === "file") {
-      setForm((prev) => ({ ...prev, [name]: files[0]?.name || "" }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -136,46 +154,27 @@ export default function AddInventory() {
     item.ticketType.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const selectOptions = (name) => {
-    const options = {
-      ticketType: ["E-ticket", "Local Delivery"],
-      splitType: ["None", "Split Type"],
-      category: ["Home", "Away Fan Section"],
-      section: ["Longside Lower Tier", "Washington Lower Tier"],
-      FanArea: ["Home", "Away"],
-      seatingArrangement: ["Not Seated together", "Seated Together"],
-      benefits: ["None", "Merchandise", "Free Food"],
-      restrictions: ["None", "ID Required", "No Kids"],
-    };
-    return options[name] || [];
-  };
-
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">Add Inventory</h2>
-        <div className="flex items-center gap-4">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded">
-            Request Event
-          </button>
-          <Image src={message} width={40} height={40} alt="message" />
-        </div>
-      </div>
+      <h2 className="text-2xl font-bold mb-4">Add Inventory</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
+      {/* Form */}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
         {Object.entries(form).map(([key, value]) => {
-          const label = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
-          if (selectOptions(key).length > 0) {
+          if (selectOptions[key]) {
             return (
-              <FormControl fullWidth key={key}>
-                <InputLabel>{getLabel(key, label)}</InputLabel>
+              <FormControl key={key} fullWidth error={!!formErrors[key]}>
+                <InputLabel>
+                  {key.replace(/([A-Z])/g, " $1")}
+                  {formErrors[key] ? " *" : ""}
+                </InputLabel>
                 <Select
                   name={key}
                   value={value}
                   onChange={handleChange}
-                  label={label}
+                  label={key.replace(/([A-Z])/g, " $1")}
                 >
-                  {selectOptions(key).map((opt) => (
+                  {selectOptions[key].map((opt) => (
                     <MenuItem key={opt} value={opt}>
                       {opt}
                     </MenuItem>
@@ -190,22 +189,24 @@ export default function AddInventory() {
                 fullWidth
                 type="date"
                 name={key}
-                label={getLabel(key, "Ship Date")}
+                label="Ship Date"
                 value={value}
                 onChange={handleChange}
                 InputLabelProps={{ shrink: true }}
+                error={!!formErrors[key]}
+                helperText={formErrors[key]}
               />
             );
           } else if (key === "ticketInHand") {
             return (
-              <div key={key} className="flex items-center">
-                <label className="text-sm mr-2">Ticket In Hand</label>
+              <div key={key} className="flex items-center mt-2">
                 <input
                   type="checkbox"
                   name={key}
                   checked={value}
                   onChange={handleChange}
                 />
+                <label className="ml-2">Ticket In Hand</label>
               </div>
             );
           } else if (key === "uploadTicket") {
@@ -215,8 +216,7 @@ export default function AddInventory() {
                 fullWidth
                 type="file"
                 name={key}
-                label={getLabel(key, "Upload Ticket")}
-                onChange={handleChange}
+                label="Upload Ticket"
                 disabled
               />
             );
@@ -226,22 +226,23 @@ export default function AddInventory() {
                 key={key}
                 fullWidth
                 name={key}
-                label={getLabel(key, label)}
+                label={
+                  key.replace(/([A-Z])/g, " $1") +
+                  (formErrors[key] ? " *" : "")
+                }
                 value={value}
                 onChange={handleChange}
                 type={typeof value === "number" ? "number" : "text"}
+                error={!!formErrors[key]}
+                helperText={formErrors[key]}
               />
             );
           }
         })}
       </div>
 
-      <div className="flex gap-2 mb-6 justify-end">
-        <Button
-          onClick={handleAddListing}
-          variant="contained"
-          color="primary"
-        >
+      <div className="flex justify-end gap-2 mb-4">
+        <Button onClick={handleAddListing} variant="contained" color="primary">
           {editId ? "Update Listing" : "+ Add Listing"}
         </Button>
         <Button onClick={resetForm} variant="outlined">
@@ -249,6 +250,7 @@ export default function AddInventory() {
         </Button>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto border rounded-md max-h-[400px]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-blue-900 text-white sticky top-0">
@@ -260,7 +262,20 @@ export default function AddInventory() {
                   onChange={handleSelectAll}
                 />
               </th>
-              {["Ticket Type", "Qty", "Split", "Max", "Category", "Section", "Seating", "Row", "Seat", "Face", "Payout", "Actions"].map((header) => (
+              {[
+                "Ticket Type",
+                "Qty",
+                "Split",
+                "Max",
+                "Category",
+                "Section",
+                "Seating",
+                "Row",
+                "Seat",
+                "Face",
+                "Payout",
+                "Actions",
+              ].map((header) => (
                 <th key={header} className="px-4 py-2 text-left">
                   {header}
                 </th>
@@ -305,18 +320,22 @@ export default function AddInventory() {
         </table>
       </div>
 
-      <footer className="mt-6 flex justify-end gap-2 border-t pt-4">
-        <button
-          onClick={handleDeleteSelected}
-          className="border px-4 py-2 rounded text-red-600"
-        >
-          Delete Selected
-        </button>
-        <button className="border px-4 py-2 rounded">Cancel</button>
-        <button className="bg-green-600 text-white px-4 py-2 rounded">
-          Publish
-        </button>
-      </footer>
+    
+ <footer className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-3 flex justify-end gap-2 shadow z-10">
+  <Button
+    onClick={handleDeleteSelected}
+    variant="outlined"
+    color="error"
+  >
+    Delete Selected
+  </Button>
+  <Button variant="outlined">Cancel</Button>
+  <Button variant="contained" color="success">
+    Publish
+  </Button>
+</footer>
     </div>
+
+    
   );
 }
