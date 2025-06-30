@@ -155,8 +155,49 @@ export default function AddInventory() {
   );
 
   return (
+    
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Add Inventory</h2>
+        <header className="p-4 border-b bg-white">
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-2xl font-semibold">Add Inventory</h2>
+      <div className="flex items-center gap-4">
+        <button className="bg-blue-600 text-white px-4 py-2 rounded">
+          Request Event
+        </button>
+        <Image src={message} width={40} height={40} alt="message" />
+      </div>
+    </div>
+
+    {/* Event Info Section */}
+    <div className="flex gap-4 p-2 rounded">
+      <div className="flex flex-wrap gap-4 w-3/4 items-center">
+        <input
+          className="border rounded px-2 py-1"
+          type="text"
+          placeholder="Chelsea vs Arsenal - Premier League"
+        />
+        <div className="flex items-center gap-1">
+          <FiCalendar className="text-blue-600" />
+          <span className="text-lg font-medium">Sun, 10 Nov 2025</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <FiClock className="text-blue-600" />
+          <span className="text-lg font-medium">16:30</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <FiMapPin className="text-blue-600" />
+          <span className="text-lg font-medium">
+            Stamford Bridge, London, United Kingdom
+          </span>
+        </div>
+      </div>
+      <div className="flex justify-end w-1/4 items-center">
+        <h2 className="text-blue-700 font-semibold text-lg cursor-pointer">
+          View Map
+        </h2>
+      </div>
+    </div>
+  </header>
 
       {/* Form */}
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
