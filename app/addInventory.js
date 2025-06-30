@@ -157,9 +157,9 @@ export default function AddInventory() {
   return (
     
     <div className="p-4">
-        <header className="p-4 border-b bg-white">
+        <header className="p-4 bg-white">
     <div className="flex justify-between items-center mb-4">
-      <h2 className="text-2xl font-semibold">Add Inventory</h2>
+      <h2 className="text-2xl font-bold text-blue-900">Add Inventory</h2>
       <div className="flex items-center gap-4">
         <button className="bg-blue-600 text-white px-4 py-2 rounded">
           Request Event
@@ -171,7 +171,7 @@ export default function AddInventory() {
     {/* Event Info Section */}
     <div className="flex gap-4 p-2 rounded">
       <div className="flex flex-wrap gap-4 w-3/4 items-center">
-        <input
+        <TextField
           className="border rounded px-2 py-1"
           type="text"
           placeholder="Chelsea vs Arsenal - Premier League"
