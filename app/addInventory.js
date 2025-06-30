@@ -217,7 +217,7 @@ export default function AddInventory() {
                 type="file"
                 name={key}
                 label="Upload Ticket"
-                disabled
+                
               />
             );
           } else {
