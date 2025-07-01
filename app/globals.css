@@ -5,21 +5,33 @@
   --foreground: #171717;
 }
 
+
+
 p, h3, h4, label {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
   color: #0d0d73;
 
 }
 
 h2 {
-   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+   font-family: "Roboto", sans-serif;
+   color: #323A70;
+   font-size:24px;
+   font-weight: 600;
+}
+span{
+  color :#323A70;
+  font-size: 14px;
+  font-weight: 400; 
+  font-family: "Roboto", sans-serif;
 
 }
 
 input, select {
   border: 1px solid #4a4747;
   color: #0d0d73;
+  font-family: "Roboto", sans-serif;
 
 }
 
