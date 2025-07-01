@@ -170,7 +170,7 @@ export default function AddInventory() {
         </div>
 
         <div className="flex items-center justify-between gap-4 p-2 rounded flex-wrap md:flex-nowrap">
-  {/* Left section: Match Event + Info */}
+
   <div className="flex items-center gap-4 flex-wrap md:flex-nowrap flex-1">
     <div className="w-full md:w-[300px]">
       <TextField
@@ -202,7 +202,7 @@ export default function AddInventory() {
     </div>
   </div>
 
-  {/* Right section: View Map */}
+
   <div className="whitespace-nowrap">
     <h2 className="text-blue-700 font-semibold text-base md:text-lg cursor-pointer">
       View Map
@@ -215,7 +215,7 @@ export default function AddInventory() {
       {/* Form Fields */}
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
         {Object.entries(form).map(([key, value]) => {
-          if (key === "matchEvent") return null; // Already rendered above
+          if (key === "matchEvent") return null; 
 
           if (selectOptions[key]) {
             return (
@@ -303,7 +303,7 @@ export default function AddInventory() {
         })}
       </div>
 
-      {/* Actions */}
+      
       <div className="flex justify-end gap-2 mb-4">
         <Button onClick={handleAddListing} variant="contained" color="primary">
           {editId ? "Update Listing" : "+ Add Listing"}
@@ -313,7 +313,7 @@ export default function AddInventory() {
         </Button>
       </div>
 
-      {/* Table */}
+    
       <div className="overflow-x-auto border rounded-md max-h-[400px]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-blue-900 text-white sticky top-0">
