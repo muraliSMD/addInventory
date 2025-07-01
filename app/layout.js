@@ -3,8 +3,8 @@ import "./globals.css";
 
 const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["400", "500", "700"], // you can include desired weights
-  variable: "--font-roboto",     // optional: use CSS variable
+  weight: ["400", "500", "700"], 
+  variable: "--font-roboto",    
 });
 
 export const metadata = {
