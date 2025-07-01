@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AiFillEdit, AiOutlineDelete } from "react-icons/ai";
-import { FiCalendar, FiClock, FiMapPin, FiCopy } from "react-icons/fi";
+import { FiCalendar, FiClock, FiMapPin, FiCopy, FiBox } from "react-icons/fi";
 import Image from "next/image";
 import message from "../public/images/chat.png";
 import {
@@ -16,6 +16,7 @@ import {
 
 export default function AddInventory() {
   const initialForm = {
+    matchEvent: "",
     ticketType: "E-ticket",
     quantity: "",
     splitType: "None",
@@ -155,53 +156,67 @@ export default function AddInventory() {
   );
 
   return (
-    
     <div className="p-4">
-        <header className="p-4 bg-white">
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-2xl font-bold text-blue-900">Add Inventory</h2>
-      <div className="flex items-center gap-4">
-        <button className="bg-blue-600 text-white px-4 py-2 rounded">
-          Request Event
-        </button>
-        <Image src={message} width={40} height={40} alt="message" />
-      </div>
+      {/* Header */}
+      <header className="p-4 bg-white">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-blue-900">Add Inventory</h2>
+          <div className="flex items-center gap-4">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded">
+              Request Event
+            </button>
+            <Image src={message} width={40} height={40} alt="message" />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 p-2 rounded flex-wrap md:flex-nowrap">
+  {/* Left section: Match Event + Info */}
+  <div className="flex items-center gap-4 flex-wrap md:flex-nowrap flex-1">
+    <div className="w-full md:w-[300px]">
+      <TextField
+        fullWidth
+        name="matchEvent"
+        label="Choose Match Event"
+        value={form.matchEvent}
+        onChange={handleChange}
+        error={!!formErrors.matchEvent}
+        helperText={formErrors.matchEvent}
+      />
     </div>
 
-    {/* Event Info Section */}
-    <div className="flex gap-4 p-2 rounded">
-      <div className="flex flex-wrap gap-4 w-3/4 items-center">
-        <TextField
-          className="border rounded px-2 py-1"
-          type="text"
-          placeholder="Chelsea vs Arsenal - Premier League"
-        />
-        <div className="flex items-center gap-1">
-          <FiCalendar className="text-blue-600" />
-          <span className="text-lg font-medium">Sun, 10 Nov 2025</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <FiClock className="text-blue-600" />
-          <span className="text-lg font-medium">16:30</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <FiMapPin className="text-blue-600" />
-          <span className="text-lg font-medium">
-            Stamford Bridge, London, United Kingdom
-          </span>
-        </div>
-      </div>
-      <div className="flex justify-end w-1/4 items-center">
-        <h2 className="text-blue-700 font-semibold text-lg cursor-pointer">
-          View Map
-        </h2>
-      </div>
+    <div className="flex items-center gap-1">
+      <FiCalendar className="text-blue-600" />
+      <span className="text-sm md:text-base font-medium">Sun, 10 Nov 2025</span>
     </div>
-  </header>
 
-      {/* Form */}
+    <div className="flex items-center gap-1">
+      <FiClock className="text-blue-600" />
+      <span className="text-sm md:text-base font-medium">16:30</span>
+    </div>
+
+    <div className="flex items-center gap-1">
+      <FiMapPin className="text-blue-600" />
+      <span className="text-sm md:text-base font-medium">
+        Stamford Bridge, London, United Kingdom
+      </span>
+    </div>
+  </div>
+
+  {/* Right section: View Map */}
+  <div className="whitespace-nowrap">
+    <h2 className="text-blue-700 font-semibold text-base md:text-lg cursor-pointer">
+      View Map
+    </h2>
+  </div>
+</div>
+
+      </header>
+
+      {/* Form Fields */}
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
         {Object.entries(form).map(([key, value]) => {
+          if (key === "matchEvent") return null; // Already rendered above
+
           if (selectOptions[key]) {
             return (
               <FormControl key={key} fullWidth error={!!formErrors[key]}>
@@ -240,14 +255,21 @@ export default function AddInventory() {
             );
           } else if (key === "ticketInHand") {
             return (
-              <div key={key} className="flex items-center mt-2">
+              <div
+                key={key}
+                className="flex items-center justify-between border px-4 py-[9px] rounded h-[56px]"
+              >
+                <div className="flex items-center gap-2">
+                  <FiBox className="text-blue-600" size={20} />
+                  <span className="text-sm font-medium">Ticket In Hand</span>
+                </div>
                 <input
                   type="checkbox"
-                  name={key}
+                  name="ticketInHand"
                   checked={value}
                   onChange={handleChange}
+                  className="w-5 h-5"
                 />
-                <label className="ml-2">Ticket In Hand</label>
               </div>
             );
           } else if (key === "uploadTicket") {
@@ -258,7 +280,6 @@ export default function AddInventory() {
                 type="file"
                 name={key}
                 label="Upload Ticket"
-                
               />
             );
           } else {
@@ -282,6 +303,7 @@ export default function AddInventory() {
         })}
       </div>
 
+      {/* Actions */}
       <div className="flex justify-end gap-2 mb-4">
         <Button onClick={handleAddListing} variant="contained" color="primary">
           {editId ? "Update Listing" : "+ Add Listing"}
@@ -361,22 +383,16 @@ export default function AddInventory() {
         </table>
       </div>
 
-    
- <footer className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-3 flex justify-end gap-2 shadow z-10">
-  <Button
-    onClick={handleDeleteSelected}
-    variant="outlined"
-    color="error"
-  >
-    Delete Selected
-  </Button>
-  <Button variant="outlined">Cancel</Button>
-  <Button variant="contained" color="success">
-    Publish
-  </Button>
-</footer>
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-3 flex justify-end gap-2 shadow z-10">
+        <Button onClick={handleDeleteSelected} variant="outlined" color="error">
+          Delete Selected
+        </Button>
+        <Button variant="outlined">Cancel</Button>
+        <Button variant="contained" color="success">
+          Publish
+        </Button>
+      </footer>
     </div>
-
-    
   );
 }
